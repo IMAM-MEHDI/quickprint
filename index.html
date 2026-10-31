@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Imam CSC Centre — Upload your PDF and get it printed. No app needed. Just scan, upload, and collect your prints.">
+  <meta name="theme-color" content="#1e3a5f">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Imam CSC Centre — Print Service</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- PDF.js for client-side page counting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- QR Code library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ════════════════════════════════════════════════════
+       PAGE 1: HOME
+       ════════════════════════════════════════════════════ -->
+  <div id="page-home" class="page active">
+
+    <!-- Hero -->
+    <section class="hero">
+      <img src="logo.jpg" alt="Imam CSC Centre logo" class="hero-logo" id="hero-logo">
+      <h1>Imam CSC Centre</h1>
+      <p class="tagline">Print &amp; Document Services</p>
+    </section>
+
+    <!-- Contact chips -->
+    <div class="contact-chips">
+      <a href="tel:+919876543210" class="chip" id="chip-phone">
+        <span class="chip-icon">📞</span>
+        <span>Call Us</span>
+      </a>
+      <a href="https://maps.google.com" target="_blank" class="chip" id="chip-location">
+        <span class="chip-icon">📍</span>
+        <span>Directions</span>
+      </a>
+      <a href="https://wa.me/919876543210" target="_blank" class="chip" id="chip-whatsapp">
+        <span class="chip-icon">💬</span>
+        <span>WhatsApp</span>
+      </a>
+    </div>
+
+    <!-- Primary CTA -->
+    <button class="btn-primary" id="btn-upload-pdf" type="button">
+      <span class="btn-icon">📄</span>
+      Upload PDF to Print
+    </button>
+
+    <!-- How it works -->
+    <div class="info-card mt-lg" id="card-how-it-works">
+      <div class="card-header">
+        <div class="card-icon blue">📋</div>
+        <span class="card-title">How It Works</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>Upload Your PDF</h4>
+            <p>Select a PDF file from your phone — no app needed.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>Choose Print Settings</h4>
+            <p>Pick paper size, colour mode, copies, and more.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>Get a Job Number</h4>
+            <p>You'll receive a unique reference for your print job.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h4>Pay &amp; Collect</h4>
+            <p>Come to the counter, pay, and collect your prints.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- File info -->
+    <div class="info-card" id="card-file-info">
+      <div class="card-header">
+        <div class="card-icon amber">📎</div>
+        <span class="card-title">Accepted Files</span>
+      </div>
+      <ul>
+        <li>PDF files only (.pdf)</li>
+        <li>Maximum file size: <strong id="max-file-size-display">20 MB</strong></li>
+        <li>Maximum pages: <strong id="max-pages-display">100</strong> per file</li>
+      </ul>
+    </div>
+
+    <!-- Privacy notice -->
+    <div class="info-card" id="card-privacy">
+      <div class="card-header">
+        <div class="card-icon green">🔒</div>
+        <span class="card-title">Privacy &amp; Security</span>
+      </div>
+      <ul>
+        <li>Files are uploaded over encrypted HTTPS</li>
+        <li>Your documents are deleted after printing</li>
+        <li>We don't share your files with third parties</li>
+      </ul>
+      <button class="btn-secondary btn-sm mt-md" id="btn-privacy-details" type="button">
+        Read Full Privacy Policy
+      </button>
+    </div>
+
+    <!-- QR Code section -->
+    <div class="qr-section" id="qr-section">
+      <p class="section-label" style="font-size:0.78rem; font-weight:600; color:var(--gray-400); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:var(--space-sm);">Share This Page</p>
+      <div class="qr-container">
+        <canvas id="qr-canvas"></canvas>
+      </div>
+      <p class="qr-label">Scan to open on another device</p>
+    </div>
+
+    <!-- Payment notice -->
+    <div class="notice info">
+      <span class="notice-icon">ℹ️</span>
+      <span><strong>Payment is made at the counter.</strong> Uploading a file does not mean it has been printed. You'll receive a job number to present when you arrive.</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <p>© 2026 Imam CSC Centre. All rights reserved.</p>
+      <p class="mt-sm">
+        <a href="#" id="footer-privacy-link">Privacy Policy</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       PAGE 2: UPLOAD & PRINT SETTINGS
+       ════════════════════════════════════════════════════ -->
+  <div id="page-upload" class="page">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <button class="back-btn" id="btn-back-home" type="button" aria-label="Back">←</button>
+      <span class="bar-title">Upload &amp; Settings</span>
+    </div>
+
+    <!-- Upload zone -->
+    <div class="upload-zone" id="upload-zone" role="button" tabindex="0" aria-label="Click to upload PDF">
+      <span class="upload-icon">📤</span>
+      <p class="upload-text">Tap to choose a PDF</p>
+      <p class="upload-hint">or drag &amp; drop here</p>
+    </div>
+    <input type="file" id="file-input" accept=".pdf,application/pdf" hidden>
+    <div class="field-error" id="file-error"></div>
+
+    <!-- File info -->
+    <div class="file-info" id="file-info">
+      <div class="file-row">
+        <div class="file-icon">📕</div>
+        <div class="file-details">
+          <p class="file-name" id="file-name">document.pdf</p>
+          <p class="file-size" id="file-size">2.4 MB · 12 pages</p>
+        </div>
+        <button class="file-remove" id="btn-file-remove" type="button" aria-label="Remove file">✕</button>
+      </div>
+    </div>
+
+    <!-- Upload progress -->
+    <div class="progress-wrap" id="upload-progress">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text">
+        <span id="progress-label">Uploading…</span>
+        <span id="progress-pct">0%</span>
+      </div>
+    </div>
+
+    <!-- Print Settings -->
+    <div class="settings-section" id="settings-section">
+      <p class="section-label">Print Settings</p>
+
+      <div class="setting-group">
+        <!-- Paper size -->
+        <div class="setting-row">
+          <span class="setting-label">
+            <span class="setting-icon">📐</span>
+            Paper Size
+          </span>
+          <select class="setting-select" id="select-paper-size">
+            <option value="A4" selected>A4</option>
+          </select>
+        </div>
+
+        <!-- Colour mode -->
+        <div class="setting-row" id="row-colour-mode">
+          <span class="setting-label">
+            <span class="setting-icon">🎨</span>
+            Colour
+          </span>
+          <div class="seg-control" id="seg-colour">
+            <button class="seg-option active" data-value="bw" type="button">B&amp;W</button>
+            <button class="seg-option" data-value="colour" type="button">Colour</button>
+          </div>
+        </div>
+
+        <!-- Sides -->
+        <div class="setting-row" id="row-sides">
+          <span class="setting-label">
+            <span class="setting-icon">📑</span>
+            Sides
+          </span>
+          <div class="seg-control" id="seg-sides">
+            <button class="seg-option active" data-value="single" type="button">Single</button>
+            <button class="seg-option" data-value="double" type="button">Double</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <!-- Copies -->
+        <div class="setting-row">
+          <span class="setting-label">
+            <span class="setting-icon">📋</span>
+            Copies
+          </span>
+          <div class="stepper" id="stepper-copies">
+            <button type="button" id="btn-copies-minus" aria-label="Decrease copies">−</button>
+            <span class="stepper-value" id="copies-value">1</span>
+            <button type="button" id="btn-copies-plus" aria-label="Increase copies">+</button>
+          </div>
+        </div>
+
+        <!-- Page range -->
+        <div class="setting-row">
+          <span class="setting-label">
+            <span class="setting-icon">📄</span>
+            Pages
+          </span>
+          <input type="text" class="page-range-input" id="input-page-range" placeholder="All pages" aria-label="Page range, e.g. 1-5">
+        </div>
+      </div>
+
+      <!-- Page range hint -->
+      <p class="text-sm text-muted mt-sm" style="padding-left:4px;">
+        Leave blank for all pages, or enter a range like <code style="font-family:var(--font-mono);background:var(--gray-100);padding:2px 6px;border-radius:4px;">1-5</code> or <code style="font-family:var(--font-mono);background:var(--gray-100);padding:2px 6px;border-radius:4px;">1,3,7-10</code>.
+      </p>
+    </div>
+
+    <!-- Price estimate -->
+    <div class="price-card" id="price-card">
+      <p class="price-label">Estimated Price</p>
+      <p class="price-value" id="price-total">₹0.00</p>
+      <div class="price-breakdown">
+        <div class="price-line">
+          <span id="price-pages-label">0 pages × B&W</span>
+          <span id="price-per-page">₹0.00</span>
+        </div>
+        <div class="price-line">
+          <span id="price-copies-label">× 1 copy</span>
+          <span id="price-subtotal">₹0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="notice warning" id="notice-estimate">
+      <span class="notice-icon">⚠️</span>
+      <span>This is an estimate. The final price is confirmed by the shop after verifying your document.</span>
+    </div>
+
+    <!-- Submit button -->
+    <button class="btn-accent" id="btn-submit-job" type="button" disabled>
+      Submit Print Job
+    </button>
+
+    <p class="text-sm text-muted text-center mt-md">
+      By submitting, you agree to our <a href="#" id="link-privacy-upload">privacy policy</a>.
+    </p>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       PAGE 3: JOB CONFIRMATION & TRACKING
+       ════════════════════════════════════════════════════ -->
+  <div id="page-confirm" class="page">
+
+    <div class="confirm-header">
+      <div class="confirm-icon" id="confirm-icon">✓</div>
+      <h2>Job Submitted!</h2>
+      <p class="text-sm text-muted">Your print job has been received</p>
+      <div class="job-number" id="job-number">JOB-000000</div>
+    </div>
+
+    <!-- Status -->
+    <div class="text-center">
+      <div class="status-badge uploaded" id="status-badge">
+        <span class="status-dot"></span>
+        <span id="status-text">Uploaded</span>
+      </div>
+    </div>
+
+    <!-- Important notice -->
+    <div class="notice warning">
+      <span class="notice-icon">⚠️</span>
+      <span><strong>Upload ≠ Printed.</strong> Your job has been received but not yet accepted. Please visit the counter to make payment and confirm your order.</span>
+    </div>
+
+    <!-- Summary -->
+    <p class="section-label" style="font-size:0.78rem; font-weight:600; color:var(--gray-400); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:var(--space-sm); margin-top:var(--space-lg);">Job Summary</p>
+    <div class="summary-card" id="summary-card">
+      <div class="summary-row">
+        <span class="summary-key">File</span>
+        <span class="summary-val" id="summary-file">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Paper Size</span>
+        <span class="summary-val" id="summary-paper">A4</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Colour Mode</span>
+        <span class="summary-val" id="summary-colour">Black & White</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Sides</span>
+        <span class="summary-val" id="summary-sides">Single-sided</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Pages</span>
+        <span class="summary-val" id="summary-pages">All</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Copies</span>
+        <span class="summary-val" id="summary-copies">1</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-key">Estimated Price</span>
+        <span class="summary-val" id="summary-price" style="color:var(--brand-accent-dark);font-family:var(--font-mono);">₹0.00</span>
+      </div>
+    </div>
+
+    <!-- Status Timeline -->
+    <p class="section-label" style="font-size:0.78rem; font-weight:600; color:var(--gray-400); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:var(--space-sm); margin-top:var(--space-lg);">Job Progress</p>
+    <div class="status-timeline" id="status-timeline">
+      <div class="timeline-item done">
+        <div class="timeline-dot">✓</div>
+        <div class="timeline-content">
+          <h4>Uploaded</h4>
+          <p>Your file has been received</p>
+        </div>
+      </div>
+      <div class="timeline-item current">
+        <div class="timeline-dot">●</div>
+        <div class="timeline-content">
+          <h4>Awaiting Payment</h4>
+          <p>Visit the counter to pay</p>
+        </div>
+      </div>
+      <div class="timeline-item pending">
+        <div class="timeline-dot">○</div>
+        <div class="timeline-content">
+          <h4>Payment Confirmed</h4>
+          <p>Shop confirms your payment</p>
+        </div>
+      </div>
+      <div class="timeline-item pending">
+        <div class="timeline-dot">○</div>
+        <div class="timeline-content">
+          <h4>Approved</h4>
+          <p>Job approved for printing</p>
+        </div>
+      </div>
+      <div class="timeline-item pending">
+        <div class="timeline-dot">○</div>
+        <div class="timeline-content">
+          <h4>Printing</h4>
+          <p>Your document is being printed</p>
+        </div>
+      </div>
+      <div class="timeline-item pending">
+        <div class="timeline-dot">○</div>
+        <div class="timeline-content">
+          <h4>Completed</h4>
+          <p>Ready for collection</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tracking link -->
+    <div class="notice info mt-lg">
+      <span class="notice-icon">🔗</span>
+      <span>Bookmark this page or save your job number <strong id="notice-job-ref">JOB-000000</strong> to check status later.</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex-col gap-md mt-lg">
+      <button class="btn-secondary" id="btn-copy-job-number" type="button">
+        📋 Copy Job Number
+      </button>
+      <button class="btn-primary" id="btn-new-job" type="button">
+        📄 Submit Another Job
+      </button>
+    </div>
+
+    <footer class="page-footer">
+      <p>© 2026 Imam CSC Centre. All rights reserved.</p>
+    </footer>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ═══ Privacy Policy Modal ═══ -->
+<div class="modal-overlay" id="modal-privacy">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <h3>🔒 Privacy &amp; Data Policy</h3>
+
+    <h4>What We Collect</h4>
+    <p>When you upload a PDF, we store the file temporarily on our server along with your chosen print settings. We do not require you to create an account or provide personal information.</p>
+
+    <h4>How We Use Your Files</h4>
+    <p>Your uploaded file is used solely for the purpose of printing your document. We do not read, analyse, or share the contents of your files with any third party.</p>
+
+    <h4>File Retention</h4>
+    <p>Uploaded files are automatically deleted from our servers within <strong>24 hours</strong> after your print job is completed or cancelled. Unclaimed jobs are deleted after <strong>7 days</strong>.</p>
+
+    <h4>Security</h4>
+    <p>All file uploads are transmitted over HTTPS (encrypted connection). Our servers use industry-standard security practices to protect your data while it is stored.</p>
+
+    <h4>Your Rights</h4>
+    <p>You may request immediate deletion of your uploaded file at any time by contacting us at the counter or via WhatsApp. We will promptly remove your data upon request.</p>
+
+    <button class="modal-close" id="btn-close-privacy" type="button">Close</button>
+  </div>
+</div>
+
+<!-- ═══ Toast ═══ -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
